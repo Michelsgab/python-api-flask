@@ -1,4 +1,4 @@
-import json
+import logging
 from dao.factory.factory import getData
 from models.Cliente import Cliente
 
@@ -17,6 +17,7 @@ class ClienteDAO():
         sql_command = "SELECT * FROM db_exercise.db_loja.tb_cliente"
         cursor = self._con.cursor()
         try:
+            logging.info("Método find_clientes inicializado")
             cursor.execute(sql_command)
             row = cursor.fetchone()
             while row:
@@ -31,10 +32,11 @@ class ClienteDAO():
             for cliente in lista_cliente:
                 lista_cliente_dict.append(dict(cliente))
 
-            return json.dumps(lista_cliente_dict)
+            return lista_cliente_dict
         except Exception as err:
             raise err
         finally:
+            logging.info("Método find_clientes finalizado")
             cursor.close()
 
     def find_cliente(self, id):
@@ -42,6 +44,7 @@ class ClienteDAO():
         sql_command = f"SELECT * FROM db_exercise.db_loja.tb_cliente WHERE id = {id}"
         cursor = self._con.cursor()
         try:
+            logging.info("Método find_cliente inicializado")
             cursor.execute(sql_command)
             row = cursor.fetchone()
             while row:
@@ -56,10 +59,11 @@ class ClienteDAO():
             for cliente in lista_cliente:
                 lista_cliente_dict.append(dict(cliente))
 
-            return json.dumps(lista_cliente_dict)
+            return lista_cliente_dict
         except Exception as err:
             raise err
         finally:
+            logging.info("Método find_cliente finalizado")
             cursor.close()
 
     def create_cliente(self, cliente_request):
@@ -68,11 +72,13 @@ class ClienteDAO():
         cliente = Cliente(**cliente_json)
         cursor = self._con.cursor()
         try:
+            logging.info("Método create_cliente inicializado")
             cursor.execute(sql_command, cliente.id, cliente.nome, cliente.endereco, cliente.telefone)
             self._con.commit()
         except Exception as err:
             raise err
         finally:
+            logging.info("Método create_cliente finalizado")
             cursor.close()
 
     def update_cliente(self, cliente_request):
@@ -81,21 +87,25 @@ class ClienteDAO():
         cliente = Cliente(**cliente_json)
         cursor = self._con.cursor()
         try:
+            logging.info("Método update_cliente inicializado")
             cursor.execute(sql_command, cliente.nome, cliente.endereco, cliente.telefone, cliente.id)
             self._con.commit()
         except Exception as err:
             raise err
         finally:
+            logging.info("Método update_cliente finalizado")
             cursor.close()
 
     def delete_cliente(self, id):
-        sql_command = "DELETE FROM db_exercise.db_loja.tb_cliente WHERE id = " + id
+        sql_command = f"DELETE FROM db_exercise.db_loja.tb_cliente WHERE id = {id}"
         cursor = self._con.cursor()
         try:
+            logging.info("Método delete_cliente inicializado")
             cursor.execute(sql_command)
             self._con.commit()
-            return "Cliente deletado"
+            return f"Cliente do id {id} deletado"
         except Exception as err:
             raise err
         finally:
+            logging.info("Método delete_cliente finalizado")
             cursor.close()
