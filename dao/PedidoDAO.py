@@ -46,3 +46,50 @@ class PedidoDAO():
         finally:
             logging.info("Método find_pedidos finalizado")
             cursor.close()
+
+    def find_pedido(self, id):
+        lista_pedido = []
+        sql_command = f"""SELECT
+        db_exercise.db_loja.tb_pedido.id, db_exercise.db_loja.tb_pedido.id_clienteFK,
+        db_exercise.db_loja.tb_pedido.valor_total, db_exercise.db_loja.tb_pedido.data_venda, 
+        cliente.id AS id_cliente FROM db_exercise.db_loja.tb_pedido
+        INNER JOIN db_exercise.db_loja.tb_cliente cliente
+        ON db_exercise.db_loja.tb_pedido.id_clienteFK = cliente.id
+        WHERE db_exercise.db_loja.tb_pedido.id = {id}"""
+        cursor = self._con.cursor()
+        try:
+            logging.info("Método find_pedido inicializado")
+            cursor.execute(sql_command)
+            row = cursor.fetchone()
+            pedido = Pedido()
+            while row:
+                clienteservice = ClienteService()
+                pedido.id = row[0]
+                pedido.cliente = clienteservice.find_by_id(row.id_cliente)
+                pedido.valor_total = int(row[2])
+                pedido.data_venda = str(row[3])
+                lista_pedido.append(pedido)
+                row = cursor.fetchone()
+
+            return dict(pedido)
+
+        except Exception as err:
+            raise err
+        finally:
+            logging.info("Método find_pedido finalizado")
+            cursor.close()
+
+    def create_pedido(self, produto_request):
+        sql_command = "INSERT INTO db_exercise.db_loja.tb_pedido OUTPUT Inserted.id VALUES (?, ?, ?)"
+        pedido_json = produto_request
+        pedido = Pedido(**pedido_json)
+        cursor = self._con.cursor()
+        try:
+            logging.info("Método create_pedido inicializado")
+            cursor.execute(sql_command, pedido.cliente.id, pedido.valor_total, pedido.data_venda)
+            self._con.commit()
+        except Exception as err:
+            raise err
+        finally:
+            logging.info("Método create_pedido finalizado")
+            cursor.close()

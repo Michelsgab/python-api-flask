@@ -76,7 +76,7 @@ class ProdutoDAO():
         except Exception as err:
             raise err
         finally:
-            logging.info("étodo create_produto finalizado")
+            logging.info("Método create_produto finalizado")
             cursor.close()
 
     def update_produto(self, produto_request):
