@@ -47,19 +47,17 @@ class ClienteDAO():
             logging.info("Método find_cliente inicializado")
             cursor.execute(sql_command)
             row = cursor.fetchone()
+            cliente = Cliente()
             while row:
-                cliente = Cliente()
                 cliente.id = row[0]
                 cliente.nome = row[1]
                 cliente.endereco = row[2]
                 cliente.telefone = row[3]
                 lista_cliente.append(cliente)
                 row = cursor.fetchone()
-            lista_cliente_dict = []
-            for cliente in lista_cliente:
-                lista_cliente_dict.append(dict(cliente))
 
-            return lista_cliente_dict
+            return dict(cliente)
+
         except Exception as err:
             raise err
         finally:
