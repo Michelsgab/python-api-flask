@@ -3,6 +3,8 @@ from service.PedidoService import PedidoService
 from dao.factory.factory import getData
 from models.Pagamento import Pagamento
 
+logging.basicConfig(level=logging.INFO)
+
 
 class PagamentoDAO():
     def __init__(self):
@@ -47,7 +49,6 @@ class PagamentoDAO():
             cursor.close()
 
     def find_pagamento(self, id):
-        lista_pagamento = []
         sql_command = f"""SELECT
         loja.db_loja.pagamento.id, loja.db_loja.pagamento.id_pedido_venda,
         loja.db_loja.pagamento.data_pagamento,
@@ -67,7 +68,6 @@ class PagamentoDAO():
                 pagamento.id = row[0]
                 pagamento.pedido = pedidoservice.find_by_id(row.id_pedido)
                 pagamento.data_pagamento = str(row.data_pagamento)
-                lista_pagamento.append(pagamento)
                 row = cursor.fetchone()
 
             return dict(pagamento)

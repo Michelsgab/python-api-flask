@@ -5,5 +5,5 @@ class ItemService:
     def __init__(self):
         self.item = ItemDAO()
 
-    def find_all(self, id_pedido):
-        return self.item.find_itens(id_pedido)
+    def find_by_id(self, id):
+        return self.item.find_item(id)

@@ -2,6 +2,8 @@ import logging
 from dao.factory.factory import getData
 from models.Produto import Produto
 
+logging.basicConfig(level=logging.INFO)
+
 
 class ProdutoDAO():
     def __init__(self):

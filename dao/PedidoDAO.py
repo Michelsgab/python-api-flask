@@ -4,6 +4,8 @@ from service.ItemService import ItemService
 from dao.factory.factory import getData
 from models.Pedido import Pedido
 
+logging.basicConfig(level=logging.INFO)
+
 
 class PedidoDAO():
     def __init__(self):
@@ -34,7 +36,7 @@ class PedidoDAO():
                 itemservice = ItemService()
                 pedido.id = row[0]
                 pedido.cliente = clienteservice.find_by_id(row.id_cliente)
-                pedido.itens = itemservice.find_all(row[0])
+                pedido.itens = itemservice.find_by_id(row[0])
                 pedido.valor_total = int(row[2])
                 pedido.data_venda = str(row[3])
                 lista_pedido.append(pedido)
@@ -69,7 +71,7 @@ class PedidoDAO():
                 itemservice = ItemService()
                 pedido.id = row[0]
                 pedido.cliente = clienteservice.find_by_id(row.id_cliente)
-                pedido.itens = itemservice.find_all(row[0])
+                pedido.itens = itemservice.find_by_id(row[0])
                 pedido.valor_total = int(row[2])
                 pedido.data_venda = str(row[3])
                 row = cursor.fetchone()

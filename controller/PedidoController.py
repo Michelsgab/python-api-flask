@@ -2,12 +2,27 @@ import json
 from models.Cliente import Cliente
 from models.Pedido import Pedido
 from server.appserver import server
-from flask import Response, request
+from flask import Response, request, make_response
 from service.PedidoService import PedidoService
 
 app = server.app
 
 service = PedidoService()
+
+
+@app.errorhandler(404)
+def handle_404_error(_error):
+    return make_response({'erro': 'Não encontrado'}, 404)
+
+
+@app.errorhandler(405)
+def handle_405_error(_error):
+    return make_response({'erro': 'Método não suportado pela URL'}, 405)
+
+
+@app.errorhandler(500)
+def handle_500_error(_error):
+    return make_response({'erro': 'Houve um erro na aplicação'}, 500)
 
 
 @app.route("/pedidos", methods=['GET'])

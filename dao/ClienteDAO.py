@@ -2,6 +2,8 @@ import logging
 from dao.factory.factory import getData
 from models.Cliente import Cliente
 
+logging.basicConfig(level=logging.INFO,)
+
 
 class ClienteDAO():
     def __init__(self):

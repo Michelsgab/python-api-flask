@@ -3,6 +3,8 @@ from models.Item import Item
 from dao.factory.factory import getData
 from service.ProdutoService import ProdutoService
 
+logging.basicConfig(level=logging.INFO)
+
 
 class ItemDAO():
     def __init__(self):
@@ -13,12 +15,13 @@ class ItemDAO():
         except Exception as err:
             raise err
 
-    def find_itens(self, id_pedido):
+    def find_item(self, id_pedido):
+        lista_item = []
         sql_command = f"""SELECT loja.db_loja.itens_pedido.id,
         loja.db_loja.itens_pedido.id_produto AS id_produto,
         loja.db_loja.itens_pedido.id_pedido  AS id_pedido,
         loja.db_loja.itens_pedido.quantidade, loja.db_loja.itens_pedido.valor
-        FROM loja.db_loja.itens_pedido 
+        FROM loja.db_loja.itens_pedido
         WHERE loja.db_loja.itens_pedido.id_pedido = {id_pedido}"""
         cursor = self._con.cursor()
 
@@ -34,9 +37,10 @@ class ItemDAO():
                 item.pedido = row[2]
                 item.quantidade = row[3]
                 item.valor = row[4]
+                lista_item.append(dict(item))
                 row = cursor.fetchone()
 
-            return dict(item)
+            return lista_item
         except Exception as err:
             raise err
         finally:
