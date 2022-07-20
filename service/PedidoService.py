@@ -12,7 +12,14 @@ class PedidoService:
     def find_by_id(self, id):
         return self.pedido.find_pedido(id)
 
-    def save(self, pedido_request):
-        pedido_request = request.get_json(force=True)
-        self.pedido.create_pedido(pedido_request)
+    def save(self, pedido):
+        self.pedido.create_pedido(pedido)
         return Response(None, status=201)
+
+    def update(self, pedido):
+        self.pedido.update_pedido(pedido)
+        return Response(None, status=200)
+
+    def delete(self, id):
+        self.pedido.delete_pedido(id)
+        return Response(None, status=200)

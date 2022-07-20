@@ -1,5 +1,6 @@
 import logging
 from service.ClienteService import ClienteService
+from service.ItemService import ItemService
 from dao.factory.factory import getData
 from models.Pedido import Pedido
 
@@ -16,11 +17,11 @@ class PedidoDAO():
     def find_pedidos(self):
         lista_pedido = []
         sql_command = """SELECT
-        db_exercise.db_loja.tb_pedido.id, db_exercise.db_loja.tb_pedido.id_clienteFK,
-        db_exercise.db_loja.tb_pedido.valor_total, db_exercise.db_loja.tb_pedido.data_venda, 
-        cliente.id AS id_cliente FROM db_exercise.db_loja.tb_pedido
-        INNER JOIN db_exercise.db_loja.tb_cliente cliente
-        ON db_exercise.db_loja.tb_pedido.id_clienteFK = cliente.id"""
+        loja.db_loja.pedido_venda.id, loja.db_loja.pedido_venda.id_cliente,
+        loja.db_loja.pedido_venda.valor_total, loja.db_loja.pedido_venda.data_venda, 
+        cliente.id AS id_cliente FROM loja.db_loja.pedido_venda
+        INNER JOIN loja.db_loja.cliente cliente
+        ON loja.db_loja.pedido_venda.id_cliente = cliente.id"""
         cursor = self._con.cursor()
 
         try:
@@ -30,8 +31,10 @@ class PedidoDAO():
             while row:
                 pedido = Pedido()
                 clienteservice = ClienteService()
+                itemservice = ItemService()
                 pedido.id = row[0]
                 pedido.cliente = clienteservice.find_by_id(row.id_cliente)
+                pedido.itens = itemservice.find_all(row[0])
                 pedido.valor_total = int(row[2])
                 pedido.data_venda = str(row[3])
                 lista_pedido.append(pedido)
@@ -48,14 +51,13 @@ class PedidoDAO():
             cursor.close()
 
     def find_pedido(self, id):
-        lista_pedido = []
         sql_command = f"""SELECT
-        db_exercise.db_loja.tb_pedido.id, db_exercise.db_loja.tb_pedido.id_clienteFK,
-        db_exercise.db_loja.tb_pedido.valor_total, db_exercise.db_loja.tb_pedido.data_venda, 
-        cliente.id AS id_cliente FROM db_exercise.db_loja.tb_pedido
-        INNER JOIN db_exercise.db_loja.tb_cliente cliente
-        ON db_exercise.db_loja.tb_pedido.id_clienteFK = cliente.id
-        WHERE db_exercise.db_loja.tb_pedido.id = {id}"""
+        loja.db_loja.pedido_venda.id, loja.db_loja.pedido_venda.id_cliente,
+        loja.db_loja.pedido_venda.valor_total, loja.db_loja.pedido_venda.data_venda, 
+        cliente.id AS id_cliente FROM loja.db_loja.pedido_venda
+        INNER JOIN loja.db_loja.cliente cliente
+        ON loja.db_loja.pedido_venda.id_cliente = cliente.id
+        WHERE loja.db_loja.pedido_venda.id = {id}"""
         cursor = self._con.cursor()
         try:
             logging.info("Método find_pedido inicializado")
@@ -64,11 +66,12 @@ class PedidoDAO():
             pedido = Pedido()
             while row:
                 clienteservice = ClienteService()
+                itemservice = ItemService()
                 pedido.id = row[0]
                 pedido.cliente = clienteservice.find_by_id(row.id_cliente)
+                pedido.itens = itemservice.find_all(row[0])
                 pedido.valor_total = int(row[2])
                 pedido.data_venda = str(row[3])
-                lista_pedido.append(pedido)
                 row = cursor.fetchone()
 
             return dict(pedido)
@@ -79,17 +82,43 @@ class PedidoDAO():
             logging.info("Método find_pedido finalizado")
             cursor.close()
 
-    def create_pedido(self, produto_request):
-        sql_command = "INSERT INTO db_exercise.db_loja.tb_pedido OUTPUT Inserted.id VALUES (?, ?, ?)"
-        pedido_json = produto_request
-        pedido = Pedido(**pedido_json)
+    def create_pedido(self, pedido):
+        sql_command = "INSERT INTO loja.db_loja.pedido_venda OUTPUT Inserted.id VALUES (?, ?, ?)"
         cursor = self._con.cursor()
         try:
             logging.info("Método create_pedido inicializado")
-            cursor.execute(sql_command, pedido.cliente.id, pedido.valor_total, pedido.data_venda)
+            cursor.execute(sql_command, pedido.cliente['id'], pedido.valor_total, pedido.data_venda)
             self._con.commit()
         except Exception as err:
             raise err
         finally:
             logging.info("Método create_pedido finalizado")
+            cursor.close()
+
+    def update_pedido(self, pedido):
+        sql_command = "UPDATE loja.db_loja.pedido_venda SET id_cliente = ?, " \
+                      "valor_total = ?, data_venda = ? WHERE id = ?"
+        cursor = self._con.cursor()
+        try:
+            logging.info("Método update_pedido finalizado")
+            cursor.execute(sql_command, pedido.cliente['id'], pedido.valor_total, pedido.data_venda, pedido.id)
+            self._con.commit()
+        except Exception as err:
+            raise err
+        finally:
+            logging.info("Método update_pedido finalizado")
+            cursor.close()
+
+    def delete_pedido(self, id):
+        sql_command = f"DELETE from loja.db_loja.pedido_venda WHERE id = {id}"
+        cursor = self._con.cursor()
+        try:
+            logging.info("Método delete_pedido inicializado")
+            cursor.execute(sql_command)
+            self._con.commit()
+            return f"Pedido do id {id} deletado"
+        except Exception as err:
+            raise err
+        finally:
+            logging.info("Método delete_pedido finalizado")
             cursor.close()

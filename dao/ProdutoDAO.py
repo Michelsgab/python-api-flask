@@ -14,7 +14,7 @@ class ProdutoDAO():
 
     def find_produtos(self):
         lista_produtos = []
-        sql_command = "SELECT * FROM db_exercise.db_loja.tb_produtos"
+        sql_command = "SELECT * FROM loja.db_loja.produto"
         cursor = self._con.cursor()
         try:
             logging.info("Método find_produtos inicializando")
@@ -40,24 +40,21 @@ class ProdutoDAO():
 
     def find_produto(self, id):
         lista_produto = []
-        sql_command = f"SELECT * FROM db_exercise.db_loja.tb_produtos WHERE id = {id}"
+        sql_command = f"SELECT * FROM loja.db_loja.produto WHERE id = {id}"
         cursor = self._con.cursor()
         try:
             logging.info("Método find_produto inicializado")
             cursor.execute(sql_command)
             row = cursor.fetchone()
+            produto = Produto()
             while row:
-                produto = Produto()
                 produto.id = row[0]
                 produto.descricao = row[1]
                 produto.preco = row[2]
                 lista_produto.append(produto)
                 row = cursor.fetchone()
-            lista_produto_dict = []
-            for produto in lista_produto:
-                lista_produto_dict.append(dict(produto))
 
-            return lista_produto_dict
+            return dict(produto)
         except Exception as err:
             raise err
         finally:
@@ -65,13 +62,13 @@ class ProdutoDAO():
             cursor.close()
 
     def create_produto(self, produto_request):
-        sql_command = "INSERT INTO db_exercise.db_loja.tb_produtos VALUES (?, ?, ?)"
+        sql_command = "INSERT INTO loja.db_loja.produto VALUES (?, ?)"
         produto_json = produto_request
         produto = Produto(**produto_json)
         cursor = self._con.cursor()
         try:
             logging.info("Método create_produto inicializado")
-            cursor.execute(sql_command, produto.id, produto.descricao, produto.preco)
+            cursor.execute(sql_command, produto.descricao, produto.preco)
             self._con.commit()
         except Exception as err:
             raise err
@@ -80,7 +77,7 @@ class ProdutoDAO():
             cursor.close()
 
     def update_produto(self, produto_request):
-        sql_command = f"UPDATE db_exercise.db_loja.tb_produtos SET descricao = ?, preco = ? WHERE id = ?"
+        sql_command = f"UPDATE loja.db_loja.produto SET descricao = ?, preco = ? WHERE id = ?"
         produto_json = produto_request
         produto = Produto(**produto_json)
         cursor = self._con.cursor()
@@ -95,7 +92,7 @@ class ProdutoDAO():
             cursor.close()
 
     def delete_produto(self, id):
-        sql_command = f"DELETE FROM db_exercise.db_loja.tb_produtos = WHERE id = {id}"
+        sql_command = f"DELETE FROM loja.db_loja.produto = WHERE id = {id}"
         cursor = self._con.cursor()
         try:
             logging.info("Método delete_produto inicializado")

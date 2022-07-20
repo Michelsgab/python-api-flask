@@ -24,16 +24,34 @@ def get_id_pedido(id):
 
 @app.route("/pedido", methods=['POST'])
 def post_pedido():
-    lista_pedido = []
     pedido_request = request.get_json(force=True)
     cliente = Cliente(id=pedido_request['cliente']['id'],
                       nome=pedido_request['cliente']['nome'],
                       endereco=pedido_request['cliente']['endereco'],
                       telefone=pedido_request['cliente']['telefone'])
-    pedido = Pedido(id=pedido_request['pedido']['id'],
-                    cliente=pedido_request['pedido'][cliente],
-                    valor_total=pedido_request['pedido']['valor_total'],
-                    data_venda=pedido_request['pedido']['data_venda'])
-    lista_pedido.append(pedido)
-    service.save(lista_pedido)
+    pedido = Pedido(cliente=dict(cliente),
+                    valor_total=pedido_request['valor_total'],
+                    data_venda=pedido_request['data_venda'])
+    service.save(pedido)
     return Response(None, status=201)
+
+
+@app.route("/pedido", methods=['PUT'])
+def put_pedido():
+    pedido_request = request.get_json(force=True)
+    cliente = Cliente(id=pedido_request['cliente']['id'],
+                      nome=pedido_request['cliente']['nome'],
+                      endereco=pedido_request['cliente']['endereco'],
+                      telefone=pedido_request['cliente']['telefone'])
+    pedido = Pedido(id=pedido_request['id'],
+                    cliente=dict(cliente),
+                    valor_total=pedido_request['valor_total'],
+                    data_venda=pedido_request['data_venda'])
+    service.update(pedido)
+    return Response(None, 200)
+
+
+@app.route("/pedido/<id>", methods=['DELETE'])
+def delete_pedido(id):
+    service.delete(id)
+    return Response(None, status=200)

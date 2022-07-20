@@ -1,7 +1,8 @@
 class Pedido():
-    def __init__(self, id=None, cliente=None, valor_total=None, data_venda=None):
+    def __init__(self, id=None, cliente=None, itens=[], valor_total=None, data_venda=None):
         self._id = id
         self._cliente = cliente
+        self._itens = itens
         self._valor_total = valor_total
         self._data_venda = data_venda
 
@@ -20,6 +21,14 @@ class Pedido():
     @cliente.setter
     def cliente(self, cliente):
         self._cliente = cliente
+
+    @property
+    def itens(self):
+        return self._itens
+
+    @itens.setter
+    def itens(self, itens):
+        self._itens = itens
 
     @property
     def valor_total(self):

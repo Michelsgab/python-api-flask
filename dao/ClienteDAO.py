@@ -14,7 +14,7 @@ class ClienteDAO():
 
     def find_clientes(self):
         lista_cliente = []
-        sql_command = "SELECT * FROM db_exercise.db_loja.tb_cliente"
+        sql_command = "SELECT * FROM loja.db_loja.cliente"
         cursor = self._con.cursor()
         try:
             logging.info("Método find_clientes inicializado")
@@ -41,7 +41,7 @@ class ClienteDAO():
 
     def find_cliente(self, id):
         lista_cliente = []
-        sql_command = f"SELECT * FROM db_exercise.db_loja.tb_cliente WHERE id = {id}"
+        sql_command = f"SELECT * FROM loja.db_loja.cliente WHERE id = {id}"
         cursor = self._con.cursor()
         try:
             logging.info("Método find_cliente inicializado")
@@ -65,13 +65,13 @@ class ClienteDAO():
             cursor.close()
 
     def create_cliente(self, cliente_request):
-        sql_command = "INSERT INTO db_exercise.db_loja.tb_cliente VALUES (?, ?, ?, ?)"
+        sql_command = "INSERT INTO loja.db_loja.cliente VALUES (?, ?, ?)"
         cliente_json = cliente_request
         cliente = Cliente(**cliente_json)
         cursor = self._con.cursor()
         try:
             logging.info("Método create_cliente inicializado")
-            cursor.execute(sql_command, cliente.id, cliente.nome, cliente.endereco, cliente.telefone)
+            cursor.execute(sql_command, cliente.nome, cliente.endereco, cliente.telefone)
             self._con.commit()
         except Exception as err:
             raise err
@@ -80,7 +80,7 @@ class ClienteDAO():
             cursor.close()
 
     def update_cliente(self, cliente_request):
-        sql_command = f"UPDATE db_exercise.db_loja.tb_cliente SET nome = ?, endereco = ?, telefone = ? WHERE id = ?"
+        sql_command = f"UPDATE loja.db_loja.cliente SET nome = ?, endereco = ?, telefone = ? WHERE id = ?"
         cliente_json = cliente_request
         cliente = Cliente(**cliente_json)
         cursor = self._con.cursor()
@@ -95,7 +95,7 @@ class ClienteDAO():
             cursor.close()
 
     def delete_cliente(self, id):
-        sql_command = f"DELETE FROM db_exercise.db_loja.tb_cliente WHERE id = {id}"
+        sql_command = f"DELETE FROM loja.db_loja.cliente WHERE id = {id}"
         cursor = self._con.cursor()
         try:
             logging.info("Método delete_cliente inicializado")

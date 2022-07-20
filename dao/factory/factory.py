@@ -5,7 +5,7 @@ class getData:
     cursor = (
         r"Driver={ODBC Driver 17 for SQL Server};"
         r"Server=localhost;"
-        r"Database=db_exercise;"
+        r"Database=loja;"
         r"Trusted_Connection=yes;"
     )
 
